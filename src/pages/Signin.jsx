@@ -1,9 +1,12 @@
 import { Grid, makeStyles } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
 import ButtonComponent from '../components/ButtonComponent';
+import CustomizedSnackbars from '../components/CustomizedSnackbars';
 import TextfieldComponent from '../components/TextfieldComponent';
 import TypographyComponent from '../components/TypographyComponent';
+import httpService from '../httpService/httpService';
 import { signinFields } from '../utills';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,8 +40,50 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Signin() {
   const classes = useStyles();
+  let history = useHistory();
+  const [open, setOpen] = useState(false);
+  const [severity, setSeverity] = useState('success');
+  const [message, setMessage] = useState('');
+  const [formdata, setFormdata] = useState({
+    email: '',
+    password: '',
+  });
+
+  const handleChange = (e) => {
+    e.preventDefault();
+    const { id, value } = e.target;
+    setFormdata({ ...formdata, [id]: value });
+  };
+
+  const handleSubmit = () => {
+    httpService
+      .post('/signin', formdata)
+      .then((res) => {
+        setMessage(res.data.message);
+        setSeverity('success');
+        setOpen(true);
+        localStorage.setItem('token', res.data.token);
+        history.push('/');
+      })
+      .catch((err) => {
+        setMessage(err.response.data.message);
+        setSeverity('error');
+        setOpen(true);
+      });
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <div className={classes.root}>
+      <CustomizedSnackbars
+        severity={severity}
+        message={message}
+        open={open}
+        handleClose={handleClose}
+      />
       <Grid container className={classes.container}>
         <Grid item md={12} className={classes.headGrid}>
           <TypographyComponent typographyText={'Sign in to your account'} />
@@ -53,11 +98,15 @@ export default function Signin() {
                 defaultValue={txtfield.defaultValue}
                 helperText={txtfield.helperText}
                 variant={txtfield.variant}
+                onChange={handleChange}
               />
             ))}
         </Grid>
         <Grid item md={12} className={classes.btnGrid}>
-          <ButtonComponent btnName={'Signin'}></ButtonComponent>
+          <ButtonComponent
+            btnName={'Signin'}
+            handleSubmit={handleSubmit}
+          ></ButtonComponent>
         </Grid>
       </Grid>
     </div>

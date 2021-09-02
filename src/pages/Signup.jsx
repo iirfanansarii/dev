@@ -1,9 +1,12 @@
 import { Grid, makeStyles } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
 import ButtonComponent from '../components/ButtonComponent';
 import TextfieldComponent from '../components/TextfieldComponent';
 import TypographyComponent from '../components/TypographyComponent';
+import httpService from '../httpService/httpService';
 import { signupFields } from '../utills';
+import CustomizedSnackbars from '../components/CustomizedSnackbars';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,8 +40,52 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp() {
   const classes = useStyles();
+  const [open, setOpen] = useState(false);
+  const [severity, setSeverity] = useState('success');
+  const [message, setMessage] = useState('');
+  const history = useHistory();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handelChange = (e) => {
+    e.preventDefault();
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    httpService
+      .post('/signup', formData)
+      .then((res) => {
+        setSeverity('success');
+        setMessage(res.data.message);
+        setOpen(true);
+        setTimeout(() => {
+          history.push('/');
+        }, 1000);
+      })
+      .catch((err) => {
+        setSeverity('error');
+        setMessage(err.response.data.message);
+        setOpen(true);
+      });
+  };
   return (
     <div className={classes.root}>
+      <CustomizedSnackbars
+        severity={severity}
+        message={message}
+        open={open}
+        handleClose={handleClose}
+      />
       <Grid container className={classes.container}>
         <Grid item md={12} className={classes.headGrid}>
           <TypographyComponent typographyText={'Create Your Account'} />
@@ -53,11 +100,12 @@ export default function SignUp() {
                 defaultValue={txtfield.defaultValue}
                 helperText={txtfield.helperText}
                 variant={txtfield.variant}
+                onChange={handelChange}
               />
             ))}
         </Grid>
         <Grid item md={12} className={classes.btnGrid}>
-          <ButtonComponent btnName={'Signup'}></ButtonComponent>
+          <ButtonComponent btnName={'Signup'} handleSubmit={handleSubmit} />
         </Grid>
       </Grid>
     </div>

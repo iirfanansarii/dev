@@ -12,17 +12,19 @@ const useStyles = makeStyles((theme) => ({
     height: '44px',
     '& .MuiButton-label': {
       width: '100px',
-      color: '#393939',
-    },
-  },
+      color: '#393939'
+    }
+  }
 }));
 
 export default function ButtonComponent(props) {
   const classes = useStyles();
-  const { btnName } = props;
+  const { btnName, handleSubmit } = props;
   return (
     <div>
-      <Button className={classes.btnName}> {btnName}</Button>
+      <Button className={classes.btnName} onClick={handleSubmit}>
+        {btnName}
+      </Button>
     </div>
   );
 }

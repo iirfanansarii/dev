@@ -4,50 +4,52 @@ import { Avatar, Grid, Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    maxWidth: '100%'
+    maxWidth: '100%',
+    marginBottom: '10px',
   },
   commentBox: {
     border: '1px solid #DDE4E7',
     padding: '10px',
-    borderRadius: '10px'
+    borderRadius: '10px',
   },
   userName: {
     textAlign: 'left',
     color: '#393939',
     fontWeight: '700',
     fontSize: '14px',
-    fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`
+    fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`,
   },
   commentDate: {
     textAlign: 'left',
     color: '#393939',
     fontWeight: '400',
     fontSize: '16px',
-    fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`
+    fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`,
   },
   comments: {
     textAlign: 'left',
     color: '#393939',
-    fontWeight: '800',
-    fontSize: '30px',
-    fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`
+    fontWeight: '700',
+    fontSize: '25px',
+    fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`,
   },
   avatar: {
     fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`,
     fontWeight: '700',
-    fontSize: '20px'
-  }
+    fontSize: '20px',
+  },
 }));
 
-export default function CommentComponent() {
+export default function CommentComponent(props) {
+  const { comments } = props;
   const classes = useStyles();
-  return (
-    <div className={classes.root}>
-      <Grid container className={classes.root} md={12} lg={12}>
+  return comments.map((comment, index) => (
+    <div className={classes.root} key={index}>
+      <Grid container className={classes.root} item md={12} lg={12}>
         <Grid item md={1} lg={1}>
           <Avatar className={classes.avatar}>A</Avatar>
         </Grid>
-        <Grid container md={10} lg={10} className={classes.commentBox}>
+        <Grid container item md={10} lg={10} className={classes.commentBox}>
           <Grid item md={12} lg={12}>
             <Typography className={classes.userName}>Irfan Ansari</Typography>
             <Typography className={classes.commentDate}>
@@ -56,11 +58,11 @@ export default function CommentComponent() {
           </Grid>
           <Grid item md={12} lg={12}>
             <Typography className={classes.comments}>
-              This is impressive. I will check it out.
+              {comment.comments}
             </Typography>
           </Grid>
         </Grid>
       </Grid>
     </div>
-  );
+  ));
 }

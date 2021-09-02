@@ -6,10 +6,7 @@ export default function Home() {
   return (
     <div>
       <Layout>
-        <PostcardComponent />        
-        <PostcardComponent />        
-        <PostcardComponent />        
-        <PostcardComponent />        
+        <PostcardComponent />             
       </Layout>
     </div>
   );

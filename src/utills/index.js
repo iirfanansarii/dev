@@ -3,47 +3,49 @@ const signupFields = [
     error: 'error',
     id: 'name',
     label: 'Name',
-    defaultValue: 'Alien',
+    placehoder: 'Alien',
     helperText: 'Enter your name',
-    variant: 'filled',
+    variant: 'filled'
   },
   {
     error: 'error',
-    id: 'mail',
+    id: 'email',
     label: 'Email',
-    defaultValue: 'alien@gmail.com',
+    placehoder: 'alien@gmail.com',
     helperText: 'Enter your mail',
-    variant: 'filled',
+    variant: 'filled'
   },
   {
     error: 'error',
-    id: 'pass',
+    id: 'password',
     label: 'Password',
-    defaultValue: 'Alien@Exist',
+    placehoder: 'Alien@Exist',
     helperText: 'Enter your password',
-    variant: 'filled',
-  },
+    variant: 'filled'
+  }
 ];
 
 const signinFields = [
   {
     error: 'error',
-    id: 'mail',
+    id: 'email',
     label: 'Email',
-    defaultValue: 'alien@gmail.com',
+    // defaultValue: 'alien@gmail.com',
+    placehoder: 'alien@gmail.com',
     helperText: 'Enter your mail',
-    variant: 'filled',
+    variant: 'filled'
   },
   {
     error: 'error',
-    id: 'pass',
+    id: 'password',
     label: 'Password',
-    defaultValue: 'Alien@Exist',
+    // defaultValue: 'Alien@Exist',
+    placehoder: 'Alien@Exist',
     helperText: 'Enter your password',
-    variant: 'filled',
-  },
+    variant: 'filled'
+  }
 ];
 module.exports = {
   signupFields,
-  signinFields,
+  signinFields
 };

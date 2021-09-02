@@ -14,13 +14,14 @@ import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { Avatar, Button } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   menuButton: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
   title: {
     display: 'none',
@@ -30,8 +31,8 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '20px',
     marginLeft: '20px',
     [theme.breakpoints.up('sm')]: {
-      display: 'block'
-    }
+      display: 'block',
+    },
   },
   search: {
     position: 'relative',
@@ -40,14 +41,14 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     [theme.breakpoints.up('sm')]: {
       marginLeft: theme.spacing(3),
-      width: 'auto'
+      width: 'auto',
     },
     '& .MuiInputBase-input': {
       [theme.breakpoints.up('md')]: {
         width: '40ch',
-        height: '3ch'
-      }
-    }
+        height: '3ch',
+      },
+    },
   },
   searchIcon: {
     padding: theme.spacing(0, 2),
@@ -58,13 +59,13 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     color: '#393939',
-    fonSize: '20px'
+    fonSize: '20px',
   },
   inputRoot: {
     color: '#393939',
     fonSize: '30px',
     fontFamily: 'exo',
-    fontWeight: '1000'
+    fontWeight: '1000',
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
@@ -72,32 +73,32 @@ const useStyles = makeStyles((theme) => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
-      width: '20ch'
-    }
+      width: '20ch',
+    },
   },
   sectionDesktop: {
     display: 'none',
     color: '#393939',
     [theme.breakpoints.up('md')]: {
-      display: 'flex'
+      display: 'flex',
     },
     '& .MuiBadge-colorSecondary': {
       background: '#FFFFFF',
-      color: '#393939'
-    }
+      color: '#393939',
+    },
   },
   sectionMobile: {
     display: 'flex',
     [theme.breakpoints.up('md')]: {
-      display: 'none'
-    }
+      display: 'none',
+    },
   },
   toolbar: {
-    background: '#E8E8E8'
+    background: '#E8E8E8',
   },
   badge: {
     background: '#FFFFFF',
-    color: '#393939'
+    color: '#393939',
   },
   createPost: {
     fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`,
@@ -108,14 +109,19 @@ const useStyles = makeStyles((theme) => ({
     marginRight: '10px',
     marginTop: '5px',
     textTransform: 'none',
-    texAlign: 'center'
-  }
+    texAlign: 'center',
+  },
 }));
 
 export default function HeaderComponent() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  let history = useHistory();
+
+  const onClickHandle = () => {
+    history.push('/createpost');
+  };
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -137,6 +143,10 @@ export default function HeaderComponent() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const logout = () => {
+    localStorage.clear();
+    window.location.reload(false);
+  };
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -150,6 +160,7 @@ export default function HeaderComponent() {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={logout}>Logout</MenuItem>
     </Menu>
   );
 
@@ -200,7 +211,7 @@ export default function HeaderComponent() {
               placeholder="Search…"
               classes={{
                 root: classes.inputRoot,
-                input: classes.inputInput
+                input: classes.inputInput,
               }}
               inputProps={{ 'aria-label': 'search' }}
             />
@@ -211,6 +222,7 @@ export default function HeaderComponent() {
               variant="contained"
               color="primary"
               className={classes.createPost}
+              onClick={onClickHandle}
             >
               Create Post
             </Button>

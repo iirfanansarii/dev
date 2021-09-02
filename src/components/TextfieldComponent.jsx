@@ -13,37 +13,39 @@ const useStyles = makeStyles((theme) => ({
       fontFamily: 'exo',
       fontSize: '20px',
       fontWeight: '600',
-      color: 'gray',
+      color: 'gray'
+      // background: '#E8F0FE'
     },
     '& .MuiFilledInput-root': {
-      borderRadius: '0px',
+      borderRadius: '0px'
     },
     '& .MuiFilledInput-underline:after': {
-      borderBottom: '2px solid #393939',
+      borderBottom: '2px solid #393939'
     },
     '& .MuiFormHelperText-filled': {
       fontFamily: 'exo',
       fontSize: '15px',
       color: 'gray',
-      fontWeight: '1000',
+      fontWeight: '1000'
     },
     '& .MuiFormLabel-root.Mui-error': {
       fontFamily: 'exo',
       fontSize: '15px',
       color: '#393939',
-      fontWeight: '1000',
+      fontWeight: '1000'
     },
     '& .MuiFormHelperText-root.Mui-error': {
       fontFamily: 'exo',
       fontSize: '15px',
       color: '#393939',
-      fontWeight: '1000',
-    },
-  },
+      fontWeight: '1000'
+    }
+  }
 }));
 
 export default function TextfieldComponent(props) {
-  const { error, id, label, defaultValue, helperText, variant } = props;
+  const { error, id, label, defaultValue, helperText, variant, onChange } =
+    props;
   const classes = useStyles();
   return (
     <div>
@@ -55,6 +57,7 @@ export default function TextfieldComponent(props) {
         helperText={helperText}
         variant={variant}
         className={classes.textField}
+        onChange={onChange}
       />
     </div>
   );
