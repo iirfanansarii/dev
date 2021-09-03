@@ -13,7 +13,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import { Avatar, Button } from '@material-ui/core';
+import { Avatar, Button, Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
@@ -111,6 +111,28 @@ const useStyles = makeStyles((theme) => ({
     textTransform: 'none',
     texAlign: 'center',
   },
+  signupButton: {
+    fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`,
+    fontWeight: '700',
+    fontSize: '16px',
+    height: '40px',
+    width: '160px',
+    marginRight: '10px',
+    marginTop: '5px',
+    textTransform: 'none',
+    texAlign: 'center',
+  },
+  loginButton: {
+    fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`,
+    fontWeight: '700',
+    fontSize: '16px',
+    height: '40px',
+    width: '100px',
+    marginRight: '10px',
+    marginTop: '5px',
+    textTransform: 'none',
+    texAlign: 'center',
+  },
 }));
 
 export default function HeaderComponent() {
@@ -118,9 +140,22 @@ export default function HeaderComponent() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   let history = useHistory();
+  const token = localStorage.getItem('token') || null;
 
   const onClickHandle = () => {
     history.push('/createpost');
+  };
+
+  const signupHandle = () => {
+    history.push('/signup');
+  };
+
+  const loginHandle = () => {
+    history.push('/signin');
+  };
+
+  const homePageHandle = () => {
+    history.push('/');
   };
 
   const isMenuOpen = Boolean(anchorEl);
@@ -202,7 +237,9 @@ export default function HeaderComponent() {
     <div className={classes.grow}>
       <AppBar position="fixed">
         <Toolbar className={classes.toolbar}>
-          <Typography className={classes.title}>DEVIL</Typography>
+          <Typography className={classes.title} onClick={homePageHandle}>
+            oye
+          </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon />
@@ -218,14 +255,35 @@ export default function HeaderComponent() {
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.createPost}
-              onClick={onClickHandle}
-            >
-              Create Post
-            </Button>
+            {token ? (
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.createPost}
+                onClick={onClickHandle}
+              >
+                Create Post
+              </Button>
+            ) : (
+              <div>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.loginButton}
+                  onClick={loginHandle}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.signupButton}
+                  onClick={signupHandle}
+                >
+                  Create Account
+                </Button>
+              </div>
+            )}
             <IconButton aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="secondary">
                 <MailIcon />
