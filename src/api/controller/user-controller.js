@@ -1,6 +1,7 @@
-const user = require('../models/user-model');
 const bcrypt = require('bcrypt');
+const User = require('../models/user-model');
 const { createAccessToken } = require('../helpers/tokens');
+
 const loginsecret = process.env.CUSTOMER_ACCESS_SECRET;
 
 const {
@@ -12,8 +13,8 @@ const {
   emailNotFound,
   passwordNotFound,
   userLoggedIn,
-  invalidCredential,
-  invalidUser
+  invalidPassword,
+  invalidUserEmail,
 } = require('../constants');
 
 exports.signup = (req, res) => {
@@ -29,44 +30,41 @@ exports.signup = (req, res) => {
     return res.status(400).send({ message: passwordNotFound });
   }
 
-  user
-    .findOne({ email })
-    .exec()
+  User.findOne({ email })
     .then((result) => {
       if (result) {
         return res.status(400).json({
-          message: emailExist
-        });
-      } else {
-        const saltRounds = 10;
-        const salt = bcrypt.genSaltSync(saltRounds);
-        const hash = bcrypt.hashSync(password, salt);
-
-        const newuser = new user({ name, email, password: hash });
-        newuser.save((err, results) => {
-          if (err) {
-            return res.status(500).json({
-              message: mongodbError
-            });
-          }
-          if (results) {
-            return res.status(201).json({
-              message: singupDone,
-              user: results
-            });
-          }
-          return res.status(400).json({
-            message: signupFailed
-          });
+          message: emailExist,
         });
       }
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        message: mongodbError,
-        error: err
+      const saltRounds = 10;
+      const salt = bcrypt.genSaltSync(saltRounds);
+      const hash = bcrypt.hashSync(password, salt);
+
+      const newuser = new User({ name, email, password: hash });
+      newuser.save((err, results) => {
+        if (err) {
+          return res.status(500).json({
+            message: mongodbError,
+          });
+        }
+        if (results) {
+          return res.status(201).json({
+            message: singupDone,
+            user: results,
+          });
+        }
+        return res.status(400).json({
+          message: signupFailed,
+        });
       });
-    });
+    })
+    .catch((err) =>
+      res.status(500).json({
+        message: mongodbError,
+        error: err,
+      }));
+  return null;
 };
 
 exports.signin = (req, res) => {
@@ -78,9 +76,7 @@ exports.signin = (req, res) => {
   if (!password) {
     return res.status(400).send({ message: passwordNotFound });
   }
-  user
-    .findOne({ email }, 'password')
-    .exec()
+  User.findOne({ email }, 'password')
     .then((results) => {
       if (results) {
         const comparepass = bcrypt.compareSync(password, results.password);
@@ -89,21 +85,21 @@ exports.signin = (req, res) => {
           return res.status(200).json({
             message: userLoggedIn,
             userId: results._id,
-            token
+            token,
           });
         }
         return res.status(400).json({
-          message: invalidCredential
+          message: invalidPassword,
         });
       }
       return res.status(400).json({
-        message: invalidUser
+        message: invalidUserEmail,
       });
     })
-    .catch((err) => {
-      return res.status(500).json({
+    .catch((err) =>
+      res.status(500).json({
         message: mongodbError,
-        error: err
-      });
-    });
+        error: err,
+      })
+    );
 };

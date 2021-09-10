@@ -1,4 +1,4 @@
-const posts = require('../models/post-model');
+const Posts = require('../models/post-model');
 
 const {
   mongodbError,
@@ -10,13 +10,14 @@ const {
   postsNotFound,
   commentAdded,
   invalidPostId,
+  commentNotAdded,
 } = require('../constants');
 
 exports.createPost = (req, res) => {
   const data = req.body;
   const { customerId } = req;
   const { postTitle, postContent } = data;
-  const newpost = new posts({ userId: customerId, postTitle, postContent });
+  const newpost = new Posts({ userId: customerId, postTitle, postContent });
   newpost.save((err, results) => {
     if (err) {
       return res.status(500).json({
@@ -37,8 +38,7 @@ exports.createPost = (req, res) => {
 };
 
 exports.getAllPost = (req, res) => {
-  posts
-    .find({})
+  Posts.find({})
     // .populate({ path: 'Users', select: { name: 1 } })
     .exec()
     .then((results) => {
@@ -53,18 +53,17 @@ exports.getAllPost = (req, res) => {
         });
       }
     })
-    .catch((err) => {
-      return res.status(500).json({
+    .catch((err) =>
+      res.status(500).json({
         message: mongodbError,
         error: err,
-      });
-    });
+      })
+    );
 };
 
 exports.getPostByPostId = (req, res) => {
   const { postId } = req.params;
-  posts
-    .find({ _id: postId })
+  Posts.find({ _id: postId })
     // .populate({ path: 'Users', select: { name: 1 } })
     .exec()
     .then((results) => {
@@ -76,46 +75,63 @@ exports.getPostByPostId = (req, res) => {
         post: results,
       });
     })
-    .catch((err) => {
-      return res.status(500).json({
+    .catch((err) =>
+      res.status(500).json({
         message: mongodbError,
         error: err,
-      });
-    });
+      })
+    );
 };
 
 exports.commentOnPost = (req, res) => {
   const { postId } = req.params;
   const { customerId } = req;
   const { comments } = req.body;
-  posts.findOne({ _id: postId }).exec((err, validPost) => {
+  if (!postId) {
+    return res.status(400).sendd({ message: 'Post id not found' });
+  }
+  if (!customerId) {
+    return res.status(400).send({ message: 'Customer id not found' });
+  }
+  if (!comments) {
+    return res.status(400).send({ message: 'Should not be empty' });
+  }
+  Posts.findOne({ _id: postId }).exec((err, validPost) => {
     if (err) {
       return res.status(400).json({
         message: invalidPostId,
       });
     }
     if (validPost) {
-      let condition;
-      let update;
-      condition = { _id: postId };
-      update = {
+      const condition = { _id: postId };
+      const update = {
         $push: {
           comments: [{ userId: customerId, comments }],
         },
       };
-      posts
-        .findOneAndUpdate(condition, update, { new: true })
-        .exec((err, results) => {
-          if (err) {
-            return res.status(500).json({
-              message: mongodbError,
-              error: err,
-            });
-          }
-          return res.status(200).json({
-            message: commentAdded,
-          });
-        });
+      Posts.findOneAndUpdate(condition, update, { new: true })
+        .then((response) =>
+          res.status(200).send({ message: commentAdded, response })
+        )
+        .catch((err) => res.status(400).json({ message: commentNotAdded }));
+      // .exec((err, results) => {
+      //   if (err) {
+      //     return res.status(500).json({
+      //       message: mongodbError,
+      //       error: err,
+      //     });
+      //   }
+      //   if (results) {
+      //     return res.status(200).json({
+      //       message: commentAdded,
+      //     });
+      //   }
+      //   return res.status(400).json({
+      //     message: 'Comments could not posted',
+      //   });
+      // });
     }
+    return null;
   });
+  return null;
 };

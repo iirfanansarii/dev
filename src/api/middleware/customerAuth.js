@@ -1,12 +1,13 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+
 const tokenExpiryTime = process.env.CUSTOMER_TOKEN_EXPIRY_TIME;
 const { DATETIMETOEPOC, differentiate } = require('../helpers/datetime');
 
 const {
   tokenHasExpired,
   tokenNotFound,
-  invalidToken
+  invalidToken,
 } = require('../constants/index');
 
 const customerAuth = (req, res, next) => {
@@ -27,7 +28,7 @@ const customerAuth = (req, res, next) => {
         if (err) {
           return res.status(403).json({
             message: invalidToken,
-            error: err
+            error: err,
           });
         }
         if (tokenExpTime <= tokenExpiryTime) {
@@ -36,13 +37,13 @@ const customerAuth = (req, res, next) => {
         }
         return res.status(403).json({
           message: tokenHasExpired,
-          tokenLife: tokenExpTime
+          tokenLife: tokenExpTime,
         });
-      }
+      },
     );
   } else {
     return res.status(403).json({
-      message: tokenNotFound
+      message: tokenNotFound,
     });
   }
   return null;

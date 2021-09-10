@@ -6,26 +6,26 @@ const UserSchema = new mongoose.Schema({
     require: true,
     min: 3,
     max: 15,
-    trim: true
+    trim: true,
   },
   email: {
     type: String,
     require: true,
     min: 3,
     max: 15,
-    trim: true
+    trim: true,
   },
   password: {
     type: String,
     require: true,
-    trim: true
+    trim: true,
   },
   posts: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Posts'
-    }
-  ]
+      ref: 'Posts',
+    },
+  ],
 });
 
-module.exports = mongoose.model('Users', UserSchema);
+module.exports = mongoose.model('User', UserSchema);

@@ -2,6 +2,7 @@ const express = require('express');
 const env = require('dotenv');
 const cors = require('cors');
 const mongoose = require('mongoose');
+
 env.config();
 const port = process.env.PORT;
 const app = express();
@@ -14,14 +15,14 @@ mongoose
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    }
+    },
   )
   .then(() => {
     console.log('Database Connected');
   });
 
-const userRouter = require('../src/api/router/user-rotuer');
-const postRouter = require('../src/api/router/post-router');
+const userRouter = require('./api/router/user-rotuer');
+const postRouter = require('./api/router/post-router');
 
 app.use('/api', userRouter);
 app.use('/api', postRouter);
