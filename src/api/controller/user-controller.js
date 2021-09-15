@@ -63,7 +63,8 @@ exports.signup = (req, res) => {
       res.status(500).json({
         message: mongodbError,
         error: err,
-      }));
+      })
+    );
   return null;
 };
 
@@ -102,4 +103,5 @@ exports.signin = (req, res) => {
         error: err,
       })
     );
+  return null;
 };

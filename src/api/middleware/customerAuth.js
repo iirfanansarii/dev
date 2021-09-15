@@ -32,7 +32,7 @@ const customerAuth = (req, res, next) => {
           });
         }
         if (tokenExpTime <= tokenExpiryTime) {
-          req.customerId = id;
+          req.userId = id;
           return next();
         }
         return res.status(403).json({

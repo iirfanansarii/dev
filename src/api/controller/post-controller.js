@@ -11,18 +11,32 @@ const {
   commentAdded,
   invalidPostId,
   commentNotAdded,
+  commentIsEmpty,
+  responseAdded,
+  responseNotAdded,
+  postTitleMissing,
+  postContentMissing,
+  userIdMissing,
 } = require('../constants');
 
 exports.createPost = (req, res) => {
   const data = req.body;
-  const { customerId } = req;
   const { postTitle, postContent } = data;
-  const newpost = new Posts({ userId: customerId, postTitle, postContent });
+  const { userId } = req;
+  if (!userId) {
+    return res.status(400).send({ message: userIdMissing });
+  }
+  if (!postTitle) {
+    return res.status(400).send({ message: postTitleMissing });
+  }
+  if (!postContent) {
+    return res.status(400).send({ message: postContentMissing });
+  }
+  const newpost = new Posts({ user: userId, postTitle, postContent });
   newpost.save((err, results) => {
     if (err) {
       return res.status(500).json({
-        message: mongodbError,
-        error: err,
+        message: err.message,
       });
     }
     if (results) {
@@ -35,11 +49,13 @@ exports.createPost = (req, res) => {
       message: postCreationFailed,
     });
   });
+  return null;
 };
 
 exports.getAllPost = (req, res) => {
   Posts.find({})
-    // .populate({ path: 'Users', select: { name: 1 } })
+    .select('_id userId postTitle postContent reactions comments')
+    .populate('user', '_id name')
     .exec()
     .then((results) => {
       if (!results) {
@@ -64,7 +80,8 @@ exports.getAllPost = (req, res) => {
 exports.getPostByPostId = (req, res) => {
   const { postId } = req.params;
   Posts.find({ _id: postId })
-    // .populate({ path: 'Users', select: { name: 1 } })
+    .select('_id userId postTitle postContent reactions comments')
+    .populate('user', '_id name')
     .exec()
     .then((results) => {
       if (!results) {
@@ -85,16 +102,16 @@ exports.getPostByPostId = (req, res) => {
 
 exports.commentOnPost = (req, res) => {
   const { postId } = req.params;
-  const { customerId } = req;
+  const { userId } = req;
   const { comments } = req.body;
   if (!postId) {
-    return res.status(400).sendd({ message: 'Post id not found' });
+    return res.status(400).sendd({ message: postsNotFound });
   }
-  if (!customerId) {
-    return res.status(400).send({ message: 'Customer id not found' });
+  if (!userId) {
+    return res.status(400).send({ message: userIdMissing });
   }
   if (!comments) {
-    return res.status(400).send({ message: 'Should not be empty' });
+    return res.status(400).send({ message: commentIsEmpty });
   }
   Posts.findOne({ _id: postId }).exec((err, validPost) => {
     if (err) {
@@ -106,7 +123,7 @@ exports.commentOnPost = (req, res) => {
       const condition = { _id: postId };
       const update = {
         $push: {
-          comments: [{ userId: customerId, comments }],
+          comments: [{ userId, comments }],
         },
       };
       Posts.findOneAndUpdate(condition, update, { new: true })
@@ -114,24 +131,67 @@ exports.commentOnPost = (req, res) => {
           res.status(200).send({ message: commentAdded, response })
         )
         .catch((err) => res.status(400).json({ message: commentNotAdded }));
-      // .exec((err, results) => {
-      //   if (err) {
-      //     return res.status(500).json({
-      //       message: mongodbError,
-      //       error: err,
-      //     });
-      //   }
-      //   if (results) {
-      //     return res.status(200).json({
-      //       message: commentAdded,
-      //     });
-      //   }
-      //   return res.status(400).json({
-      //     message: 'Comments could not posted',
-      //   });
-      // });
     }
     return null;
   });
   return null;
+};
+
+exports.reactionOnPost = (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.body;
+  if (!postId) {
+    return res.status(400).sendd({ message: postsNotFound });
+  }
+  if (!userId) {
+    return res.status(400).send({ message: userIdMissing });
+  }
+  Posts.findOne({ _id: postId }).exec((err, validPost) => {
+    if (err) {
+      return res.status(400).json({
+        message: invalidPostId,
+      });
+    }
+    if (validPost) {
+      const condition = { _id: postId };
+      const update = {
+        $push: {
+          reactions: [{ userId }],
+        },
+      };
+      Posts.findOneAndUpdate(condition, update, { new: true })
+        .then((response) =>
+          res.status(201).send({ message: responseAdded, response })
+        )
+        .catch((err) => res.status(400).json({ message: responseNotAdded }));
+    }
+    return null;
+  });
+  return null;
+};
+
+exports.getPost = async (req, res) => {
+  try {
+    let { page, size } = req.query;
+    if (!page) {
+      page = 1;
+    }
+
+    if (!size) {
+      size = 10;
+    }
+
+    const limit = parseInt(size, 10);
+    const skip = (page - 1) * size;
+    // const postData = await Posts.find({}, {}, { limit: limit, skip: skip });
+    const data = await Posts.find().limit(limit).skip(skip);
+    res.status(200).send({
+      records: data.length,
+      page,
+      size,
+      posts: data,
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 };

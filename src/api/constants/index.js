@@ -21,4 +21,10 @@ module.exports = {
   commentAdded: 'Comment added successfully',
   invalidPostId: 'Invalid post id',
   commentNotAdded: 'Comments not not added',
+  commentIsEmpty: 'Comment should not be empty',
+  responseAdded: 'Response added',
+  responseNotAdded: 'Respnse not added',
+  postTitleMissing: 'Post title missing',
+  postContentMissing: 'Post content missing',
+  userIdMissing: 'User id missing',
 };
