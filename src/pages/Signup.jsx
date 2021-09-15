@@ -1,4 +1,4 @@
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid, Link, makeStyles } from '@material-ui/core';
 import React, { useState } from 'react';
 import ButtonComponent from '../components/ButtonComponent';
 import TextfieldComponent from '../components/TextfieldComponent';
@@ -34,7 +34,16 @@ const useStyles = makeStyles((theme) => ({
   },
   btnGrid: {
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  signinLink: {
+    color: '#393939',
+    margin: '10px',
+    textAlign: 'left',
+    fontWeight: '700',
+    textDecoration: 'none',
+    fontSize: '15px',
+    fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`,
   },
 }));
 
@@ -78,6 +87,7 @@ export default function SignUp() {
         setOpen(true);
       });
   };
+
   return (
     <div className={classes.root}>
       <CustomizedSnackbars
@@ -105,6 +115,9 @@ export default function SignUp() {
             ))}
         </Grid>
         <Grid item md={12} className={classes.btnGrid}>
+          <Link href="/signin" className={classes.signinLink}>
+            Sign In
+          </Link>
           <ButtonComponent btnName={'Signup'} handleSubmit={handleSubmit} />
         </Grid>
       </Grid>

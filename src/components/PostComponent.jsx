@@ -82,10 +82,12 @@ export default function PostComponent() {
   const [severity, setSeverity] = useState('success');
   const [message, setMessage] = useState('');
   const history = useHistory();
+  const userId = localStorage.getItem('userId');
 
   const onsubmitHandler = () => {
     httpService
       .post('/create/post', {
+        userId,
         postTitle: postittle,
         postContent: postcontent,
       })
@@ -96,6 +98,7 @@ export default function PostComponent() {
         history.push('/');
       })
       .catch((err) => {
+        console.log('=======>error hu mai', err);
         setMessage(err.response.data.message);
         setSeverity('error');
         setOpen(true);

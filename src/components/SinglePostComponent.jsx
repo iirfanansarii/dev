@@ -9,6 +9,7 @@ import { BsBookmark } from 'react-icons/bs';
 import httpService from '../httpService/httpService';
 import { useParams } from 'react-router-dom';
 import CustomizedSnackbars from './CustomizedSnackbars';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -156,6 +157,9 @@ export default function SinglePostComponent() {
   const [message, setMessage] = useState('');
   const [comment, setComment] = useState('');
   const { id } = useParams();
+  const history = useHistory();
+  const token = localStorage.getItem('token');
+  const [clicked, setClicked] = useState(false);
 
   useEffect(() => {
     httpService
@@ -175,6 +179,8 @@ export default function SinglePostComponent() {
   };
 
   const addComment = (userId) => {
+    const token = localStorage.getItem('token');
+    if (!token) return history.push('/signin');
     httpService
       .put(`/comment/on/post/${id}`, { userId, comments: comment })
       .then((res) => {
@@ -192,6 +198,31 @@ export default function SinglePostComponent() {
       });
   };
 
+  const reactOnPost = (userId) => {
+    if (!token) return history.push('/signin');
+    httpService
+      .patch(`/reaction/on/comment/${id}`, { userId })
+      .then((res) => {
+        setClicked(true);
+        setSeverity('success');
+        setMessage(res.data.message);
+        setOpen(true);
+        setTimeout(() => {
+          window.location.reload(false);
+        }, 1000);
+      })
+      .catch((err) => {
+        setSeverity('error');
+        setMessage(err.response.data.message);
+        setOpen(true);
+      });
+  };
+
+  const buttonStyle = {
+    borderColor: 'red',
+    color: 'red',
+  };
+
   return singlepost.map((post, index) => (
     <div className={classes.root} key={index}>
       <CustomizedSnackbars
@@ -207,9 +238,11 @@ export default function SinglePostComponent() {
               color="default"
               className={classes.button}
               startIcon={<RiHeart2Line />}
+              onClick={() => reactOnPost(post._id)}
+              style={clicked === true ? buttonStyle : null}
             ></Button>
             <Typography className={classes.likesCount}>
-              {post.comments.length}
+              {post.reactions.length}
             </Typography>
             <Button
               color="default"
@@ -234,7 +267,7 @@ export default function SinglePostComponent() {
             </Grid>
             <Grid item sm={4} md={6} lg={6} className={classes.cardHeadTextBox}>
               <Typography className={classes.userName}>
-                Shrimp and Chorizo Paella
+                {post.user.name}
               </Typography>
               <Typography className={classes.postDatetime}>
                 September 14, 2016
@@ -263,7 +296,7 @@ export default function SinglePostComponent() {
               />
               <Button
                 className={classes.discusBtn}
-                onClick={() => addComment(post.userId)}
+                onClick={() => addComment(post._id)}
               >
                 Submit
               </Button>

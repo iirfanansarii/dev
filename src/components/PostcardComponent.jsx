@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import { Button, Grid, Link } from '@material-ui/core';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import { AiOutlineComment } from 'react-icons/ai';
-import httpService from '../httpService/httpService';
-import CustomizedSnackbars from './CustomizedSnackbars';
 import { useHistory } from 'react-router-dom';
+import { postContext } from '../pages/Home';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
   buttons: {
     display: 'flex',
+    width: '100%',
     justifyContent: 'space-between',
     '& .MuiButtonBase-root': {
       minWidth: '150px',
@@ -88,35 +88,16 @@ const useStyles = makeStyles((theme) => ({
   button: {
     fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`,
     fontWeight: '400',
-    fontSize: '16px',
-    textTransform: 'lowercase',
+    fontSize: '14px',
+    textTransform: 'none',
+    marginLeft: '5px',
   },
 }));
 
 export default function PostcardComponent() {
   const classes = useStyles();
-  const [posts, setPostsdata] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [severity, setSeverity] = useState('success');
-  const [message, setMessage] = useState('');
   const history = useHistory();
-
-  useEffect(() => {
-    httpService
-      .get('/post/all')
-      .then((res) => {
-        setPostsdata(res.data.posts);
-      })
-      .catch((err) => {
-        setMessage(err.response.data.message);
-        setSeverity('error');
-        setOpen(true);
-      });
-  }, []);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const { posts = [],  } = useContext(postContext) || {};
 
   const routeChange = (postId) => {
     history.push(`/singlepost/${postId}`);
@@ -124,14 +105,8 @@ export default function PostcardComponent() {
 
   return posts.map((post, index) => (
     <div className={classes.root} key={index}>
-      <CustomizedSnackbars
-        severity={severity}
-        message={message}
-        open={open}
-        handleClose={handleClose}
-      />
       <Grid container className={classes.cardHeadContainer}>
-        <Grid item sm={12} md={12} lg={12} className={classes.cardHead}>
+        <Grid item sm={12} md={12} lg={12} xl={12} className={classes.cardHead}>
           <Grid item sm={1} md={1} lg={1}>
             <Avatar aria-label="recipe" className={classes.avatar}>
               A
@@ -139,7 +114,7 @@ export default function PostcardComponent() {
           </Grid>
           <Grid item sm={4} md={6} lg={6} className={classes.cardHeadTextBox}>
             <Typography className={classes.userName}>
-              Shrimp and Chorizo Paella
+              {post.user.name}
             </Typography>
             <Typography className={classes.postDatetime}>
               September 14, 2016
@@ -158,14 +133,16 @@ export default function PostcardComponent() {
           </Grid>
 
           <Grid item className={classes.butonGrids} md={4} lg={6}>
-            <Grid item md={4} lg={8} className={classes.buttons}>
+            <Grid item md={12} lg={12} className={classes.buttons}>
               <Button
                 color="default"
-                className={classes.button}
                 startIcon={<FavoriteBorderIcon />}
                 onClick={() => routeChange(post._id)}
               >
-                10 reactions
+                <Typography className={classes.button}>
+                  {post.reactions.length}
+                </Typography>
+                <Typography className={classes.button}>reactions</Typography>
               </Button>
               <Button
                 color="default"
@@ -173,7 +150,10 @@ export default function PostcardComponent() {
                 startIcon={<AiOutlineComment />}
                 onClick={() => routeChange(post._id)}
               >
-                {post.comments.length}
+                <Typography className={classes.button}>
+                  {post.comments.length}
+                </Typography>
+                <Typography className={classes.button}>Add Comment</Typography>
               </Button>
             </Grid>
           </Grid>

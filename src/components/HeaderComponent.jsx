@@ -13,7 +13,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import { Avatar, Button, Grid } from '@material-ui/core';
+import { Avatar, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
@@ -32,6 +32,9 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: '20px',
     [theme.breakpoints.up('sm')]: {
       display: 'block',
+    },
+    '&:hover': {
+      color: 'blue',
     },
   },
   search: {
@@ -284,16 +287,16 @@ export default function HeaderComponent() {
                 </Button>
               </div>
             )}
-            <IconButton aria-label="show 4 new mails" color="inherit">
+            {/* <IconButton aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="secondary">
                 <MailIcon />
               </Badge>
-            </IconButton>
-            <IconButton aria-label="show 17 new notifications" color="inherit">
+            </IconButton> */}
+            {/* <IconButton aria-label="show 17 new notifications" color="inherit">
               <Badge badgeContent={17} color="secondary">
                 <NotificationsIcon />
               </Badge>
-            </IconButton>
+            </IconButton> */}
             <IconButton
               edge="end"
               aria-label="account of current user"

@@ -1,4 +1,4 @@
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid, Link, makeStyles } from '@material-ui/core';
 import React, { useState } from 'react';
 import ButtonComponent from '../components/ButtonComponent';
 import CustomizedSnackbars from '../components/CustomizedSnackbars';
@@ -34,7 +34,16 @@ const useStyles = makeStyles((theme) => ({
   },
   btnGrid: {
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  signupLink: {
+    color: '#393939',
+    margin: '10px',
+    textAlign: 'left',
+    fontWeight: '700',
+    textDecoration: 'none',
+    fontSize: '15px',
+    fontFamily: `Poppins,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif`,
   },
 }));
 
@@ -59,10 +68,12 @@ export default function Signin() {
     httpService
       .post('/signin', formdata)
       .then((res) => {
+        console.log('login res', res);
         setMessage(res.data.message);
         setSeverity('success');
         setOpen(true);
         localStorage.setItem('token', res.data.token);
+        localStorage.setItem('userId', res.data.userId);
         history.push('/');
       })
       .catch((err) => {
@@ -90,8 +101,9 @@ export default function Signin() {
         </Grid>
         <Grid item md={12} className={classes.textfieldBody}>
           {signinFields &&
-            signinFields.map((txtfield) => (
+            signinFields.map((txtfield, idx) => (
               <TextfieldComponent
+                key={idx}
                 error={txtfield.error}
                 id={txtfield.id}
                 label={txtfield.label}
@@ -103,6 +115,9 @@ export default function Signin() {
             ))}
         </Grid>
         <Grid item md={12} className={classes.btnGrid}>
+          <Link href="/signup" className={classes.signupLink}>
+            Sign Up
+          </Link>
           <ButtonComponent
             btnName={'Signin'}
             handleSubmit={handleSubmit}
